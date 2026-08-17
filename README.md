@@ -6,24 +6,21 @@ charger — live power/energy monitoring, charging status, and remote control
 the official Salus app or the charger's own connection to Salus's cloud.
 
 > **⚠️ Early release.** This has been running reliably on one charger for about a
-> week, but it's new, unofficial, and built by reverse-engineering the official app's
-> backend (there's no public API). If something doesn't work, or you'd like a feature
-> that isn't here yet, please [open an issue](../../issues) — bug reports and feature
-> requests are very welcome.
+> week, but it's new and unofficial. If something doesn't work, or you'd like a
+> feature that isn't here yet, please [open an issue](../../issues) — bug reports and
+> feature requests are very welcome.
 
 ## Is this for you?
 
 This targets the **Salus EVT7UK** (model identifier `SALV7TU01`), sold in the UK as a
-7kW/32A single-phase tethered Type 2 charger. It talks to the same backend the
-**Salus EV Charger** app uses — a platform built on **AWS Cognito**, **DynamoDB**, and
-**AWS IoT Device Shadows**, run by a white-label EV charging platform called
-**Uleeco**. If your charger is sold under a different brand but was clearly built on
-the same underlying platform (the app is a rebadged **Uleeco**/`salus-smart-charger`
-codebase, and OCPP-config strings referencing a brand called **Vaylen** were found in
-the firmware alongside the Salus branding — unconfirmed whether that's a literal
-sibling product), this integration *may* work for you too, unmodified or with minor
-tweaks. Worth a try either way — and please report back via an issue if it does or
-doesn't.
+7kW/32A single-phase tethered Type 2 charger. It talks to the same cloud backend the
+official **Salus EV Charger** app uses, run by a white-label EV charging platform
+called **Uleeco** — the same platform also appears to power other rebranded chargers
+(a brand called **Vaylen** shows up alongside Salus in some of the charger's own
+configuration screens, though it's unconfirmed whether that's a direct sibling
+product). If your charger is sold under a different brand but feels similar to this
+one, this integration *may* work for you too, unmodified or with minor tweaks. Worth
+a try either way — and please report back via an issue if it does or doesn't.
 
 ## Why not just use OCPP?
 
@@ -69,27 +66,24 @@ same email and password you use to log into the Salus EV Charger app.
 ## How it works (short version)
 
 Logs into AWS Cognito with your Salus account, exchanges that for temporary AWS
-credentials, looks up your charger's AWS IoT "thing name" via DynamoDB, then reads
-its live state from an **AWS IoT Device Shadow** — the same data source the app's own
-dashboard uses. Controls write to the shadow's `desired` state, which the charger
-picks up over its existing OCPP connection to Salus, exactly like tapping a button in
-the app does. Nothing about the charger's configuration or its connection to Salus is
-touched. Only a Cognito **refresh token** is stored (in Home Assistant's encrypted
-config entry storage) — never your password.
+credentials, looks up your charger's AWS IoT "thing name", then reads its live state
+from an **AWS IoT Device Shadow** — the same data source the app's own dashboard
+uses. Controls write to the shadow's `desired` state, which the charger picks up over
+its existing OCPP connection to Salus, exactly like tapping a button in the app does.
+Nothing about the charger's configuration or its connection to Salus is touched. Only
+a Cognito **refresh token** is stored (in Home Assistant's encrypted config entry
+storage) — never your password.
 
 ## Limitations
 
-- **No temperature or voltage data.** The charger's hardware measures both
-  internally, but neither is exposed by the app, the cloud API, or (confirmed via
-  direct OCPP testing) even raw OCPP `MeterValues` while idle — voltage did appear
-  briefly over OCPP while a session was actively charging, so it may be salvageable
-  in a future version. There's also a locked, more detailed local diagnostics
-  dashboard built into the charger's firmware that likely has this data, gated behind
-  what looks like a firmware bug — tracked as a possible future feature, not
-  currently accessible.
+- **No temperature data, and voltage isn't currently working.** Voltage was observed
+  briefly reporting real values while directly testing the charger's connection
+  during an active charging session, so it's known to be *possible* — it's just not
+  wired up to a working data source in this integration yet. Tracked as an open bug,
+  see [issues](../../issues). Temperature hasn't been found from any accessible data
+  source so far — tracked as an open question, also in [issues](../../issues).
 - **Cloud-dependent.** This polls Salus's AWS backend, not the charger directly on
-  your LAN — no local API is currently reachable (see above). Requires internet
-  access to function.
+  your LAN. Requires internet access to function.
 - A couple of the write-control formats (charging on/off, connector lock) were
   inferred by analogy with confirmed ones rather than directly observed — they've
   worked reliably in a week of testing, but flagging it for transparency.
@@ -106,10 +100,22 @@ especially useful for figuring out how much of this generalizes.
 
 Unofficial, community-built integration. Not affiliated with, endorsed by, or
 supported by Salus Controls or Uleeco. Uses the same account login and backend API
-the official app uses — no vulnerabilities are exploited, but this is a reverse-engineered
-integration with an unofficial, undocumented API, which could change or break without
+the official app uses — no vulnerabilities are exploited, but this is an unofficial
+integration built around an undocumented API, which could change or break without
 notice.
 
 ## License
 
 [GPL-3.0](LICENSE)
+
+## Also known as / search terms
+
+If you found this by searching for any of the following, you're in the right place:
+Salus EVT7UK Home Assistant, Salus EV Charger Home Assistant integration, Salus
+EVT7UK Home Assistant integration, SalusConnect EV charger Home Assistant, Salus
+smart EV charger Home Assistant, Salus 7kW EV charger Home Assistant, Salus Type 2
+tethered EV charger Home Assistant, Uleeco EV charger Home Assistant, Vaylen EV
+charger Home Assistant, HACS Salus EV charger, HACS EV charger integration, Home
+Assistant wallbox integration UK, Salus EVT7UK API, Salus EVT7UK custom component,
+EV charger AWS Cognito Home Assistant, EV charger AWS IoT Home Assistant Device
+Shadow.
