@@ -1,0 +1,12 @@
+{
+  "domain": "salus_ev_charger",
+  "name": "Salus EV Charger",
+  "codeowners": ["@guybw"],
+  "config_flow": true,
+  "documentation": "https://github.com/guybw/Salus_EV_Charger_to_HA",
+  "issue_tracker": "https://github.com/guybw/Salus_EV_Charger_to_HA/issues",
+  "integration_type": "device",
+  "iot_class": "cloud_polling",
+  "requirements": ["boto3>=1.34.0", "pycognito>=2024.5.1"],
+  "version": "0.1.0"
+}

@@ -1,0 +1,32 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect your Salus EV Charger",
+        "description": "Enter the same email and password you use for the Salus EV Charger app.",
+        "data": {
+          "email": "Email",
+          "password": "Password"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Login failed, or no charger was found on this account.",
+      "unknown": "Unexpected error, check the logs."
+    },
+    "abort": {
+      "already_configured": "This charger is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Salus EV Charger options",
+        "description": "How often to poll the charger's status from AWS.",
+        "data": {
+          "scan_interval": "Update interval"
+        }
+      }
+    }
+  }
+}
