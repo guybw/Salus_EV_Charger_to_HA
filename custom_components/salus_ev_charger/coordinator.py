@@ -8,9 +8,10 @@ from typing import Any
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_EMAIL, CONF_SCAN_INTERVAL
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
-from .api import SalusApiClient, SalusApiError, extract_reported_properties
+from .api import SalusApiClient, SalusApiError, SalusAuthExpired, extract_reported_properties
 from .const import CONF_REFRESH_TOKEN, CONF_THING_NAME, DEFAULT_SCAN_INTERVAL, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
@@ -37,6 +38,8 @@ class SalusDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     async def _async_update_data(self) -> dict[str, Any]:
         try:
             shadow = await self.hass.async_add_executor_job(self.client.get_shadow)
+        except SalusAuthExpired as exc:
+            raise ConfigEntryAuthFailed(str(exc)) from exc
         except SalusApiError as exc:
             raise UpdateFailed(str(exc)) from exc
 
@@ -56,6 +59,8 @@ class SalusDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         """Write to the shadow's desired state and refresh afterward."""
         try:
             await self.hass.async_add_executor_job(self.client.update_shadow, properties)
+        except SalusAuthExpired as exc:
+            raise ConfigEntryAuthFailed(str(exc)) from exc
         except SalusApiError as exc:
             raise UpdateFailed(str(exc)) from exc
         await self.async_request_refresh()

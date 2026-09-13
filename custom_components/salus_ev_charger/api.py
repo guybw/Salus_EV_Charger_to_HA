@@ -27,6 +27,24 @@ class SalusApiError(Exception):
     """Raised when the Salus/AWS backend can't be reached or returns an error."""
 
 
+class SalusAuthExpired(SalusApiError):
+    """Raised when the stored refresh token is dead and a fresh login is needed.
+
+    Happens whenever the Cognito refresh token is revoked -- most commonly
+    because the account password was changed. Distinct from SalusApiError so
+    the coordinator can tell HA to start a reauth flow instead of just
+    retrying the same dead token forever.
+    """
+
+
+def _is_auth_expired(exc: Exception) -> bool:
+    response = getattr(exc, "response", None)
+    code = (response or {}).get("Error", {}).get("Code") if response else None
+    if code == "NotAuthorizedException":
+        return True
+    return "NotAuthorizedException" in str(exc) or "Refresh Token has expired" in str(exc)
+
+
 def extract_reported_properties(shadow: dict[str, Any]) -> dict[str, Any]:
     """Pull the flat ep0:sCharger:* property dict out of a raw shadow document."""
     try:
@@ -81,11 +99,15 @@ class SalusApiClient:
             try:
                 self._cognito.renew_access_token()
             except Exception as exc:  # noqa: BLE001
+                if _is_auth_expired(exc):
+                    raise SalusAuthExpired(f"Initial token fetch failed: {exc}") from exc
                 raise SalusApiError(f"Initial token fetch failed: {exc}") from exc
         else:
             try:
                 self._cognito.check_token()
             except Exception as exc:  # noqa: BLE001
+                if _is_auth_expired(exc):
+                    raise SalusAuthExpired(f"Token refresh failed: {exc}") from exc
                 raise SalusApiError(f"Token refresh failed: {exc}") from exc
         if self._cognito.refresh_token:
             self._refresh_token = self._cognito.refresh_token

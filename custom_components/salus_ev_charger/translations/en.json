@@ -8,6 +8,13 @@
           "email": "Email",
           "password": "Password"
         }
+      },
+      "reauth_confirm": {
+        "title": "Reconnect your Salus EV Charger",
+        "description": "Your Salus login has expired (often because the account password was changed). Re-enter the password for {email} to reconnect.",
+        "data": {
+          "password": "Password"
+        }
       }
     },
     "error": {
@@ -15,7 +22,8 @@
       "unknown": "Unexpected error, check the logs."
     },
     "abort": {
-      "already_configured": "This charger is already configured."
+      "already_configured": "This charger is already configured.",
+      "reauth_successful": "Re-authentication was successful."
     }
   },
   "options": {
