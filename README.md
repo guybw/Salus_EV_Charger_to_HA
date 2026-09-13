@@ -48,9 +48,12 @@ options page after setup.
 
 ### HACS (custom repository)
 
-1. HACS → Integrations → ⋮ (top-right menu) → Custom repositories
-2. Repository: `https://github.com/guybw/Salus_EV_Charger_to_HA`, category: Integration
-3. Install "Salus EV Charger", then restart Home Assistant
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=guybw&repository=Salus_EV_Charger_to_HA&category=integration)
+
+1. Click the badge above (or: HACS → Integrations → ⋮ (top-right menu) → Custom
+   repositories → Repository: `https://github.com/guybw/Salus_EV_Charger_to_HA`,
+   category: Integration)
+2. Install "Salus EV Charger", then restart Home Assistant
 
 ### Manual
 
@@ -60,8 +63,11 @@ options page after setup.
 
 ### Setup
 
-Settings → Devices & Services → Add Integration → **Salus EV Charger** → enter the
-same email and password you use to log into the Salus EV Charger app.
+[![Open your Home Assistant instance and start setting up a new integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=salus_ev_charger)
+
+Click the badge above (or: Settings → Devices & Services → Add Integration →
+**Salus EV Charger**) → enter the same email and password you use to log into the
+Salus EV Charger app.
 
 ## How it works (short version)
 
